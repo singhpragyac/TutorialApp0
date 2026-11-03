@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
-
+import Home from "./Home.jsx"
 const App = () => {
   return (
-    <View>
-      <Text>App</Text>
+    <View style={{flex: 1}}>
+      <Home />
     </View>
   );
 };

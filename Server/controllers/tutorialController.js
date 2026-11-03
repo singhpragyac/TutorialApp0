@@ -1,4 +1,4 @@
-import tutorialSchema from "../models/tutorialSchema.js";
+import tutorialModel from "../models/tutorialSchema.js";
 import { MenuModel } from "../models/menuSchema.js";
 import slugify from "slugify";
 
@@ -24,7 +24,7 @@ export const tutorialController = async (req, res) => {
         });
         }
 
-        const tutorial = await tutorialSchema({
+        const tutorial = await tutorialModel({
             menu_id,
             title,
             content,
@@ -45,3 +45,22 @@ export const tutorialController = async (req, res) => {
         });
     }
 };
+
+
+export const getAllTutorialController = async (req, res) => {
+    try {
+        const tutorial = await tutorialModel.find();
+
+        return res.status(201).send({
+            success: true,
+            message: "here,s all tutorials",
+            tutorial        
+        })
+    } catch(error) {
+        return res.status(500).send({
+            success: false,
+            message: "Error in fetching all tutorials",
+            error: error.message
+        });
+    }
+}

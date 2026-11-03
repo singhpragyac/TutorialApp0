@@ -1,5 +1,6 @@
 import {MenuModel, CounterModel} from "../models/menuSchema.js";
 import slugify from "slugify";
+import fs from "fs";
 
 export const menuController = async (req, res) => {
     try {
@@ -24,6 +25,8 @@ export const menuController = async (req, res) => {
 
         const {title} = req.fields;
         const { menu_icon } = req.files;
+
+        // console.log(req.files);
 
         switch(true) {
             case !title:
@@ -51,14 +54,16 @@ export const menuController = async (req, res) => {
             menu_id: seqId,
             title,
             slug: slugify(title)
-        })
+        });
 
         if (menu_icon) {
             Menu.menu_icon.data = fs.readFileSync(menu_icon.path);
             Menu.menu_icon.contentType = menu_icon.type;
         }
-
+console.log("Image Buffer:", Menu.menu_icon.data);
+console.log("Content Type:", Menu.menu_icon.contentType);
         await Menu.save();
+        console.log("Saved Menu:", Menu);
 
         return res.status(201).send({
             success: true,
@@ -81,10 +86,19 @@ export const getAllMenuController = async (req, res) => {
 
         const menu = await MenuModel.find();
 
+        const formattedMenu = menu.map((item) => ({
+        ...item.toObject(),
+
+        menu_icon: {
+            data: item.menu_icon?.data?.toString("base64"),
+            contentType: item.menu_icon?.contentType
+        }
+        }));
+
         return res.status(201).send({
             success: true,
             message: "here,s all menu",
-            menu        
+            menu: formattedMenu        
         })
     } catch(error) {
         return res.status(500).send({
